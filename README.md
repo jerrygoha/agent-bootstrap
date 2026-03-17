@@ -42,10 +42,22 @@ If the user says "set this up from the repo" and does not specify a harness, def
 
 This matters most for OpenClaw-style setup requests. The correct default is not `Codex-first`, `Claude-first`, or `OpenCode-first`. The correct default is the shared prompt and skills layer only.
 
+## Default Scope Matrix
+
+- Codex: `current-harness-only`
+- Claude Code: `current-harness-only`
+- OpenCode: `current-harness-only`
+- OpenClaw: `shared-core-only`
+
+`current-harness-only` means: if you are already inside Codex, Claude Code, or OpenCode and the user says "set this up from the repo", default to configuring only that current harness. Do not configure another harness unless the user explicitly asks.
+
 ## Setup Prompts
 
 These copy-paste prompts are the fastest way to keep another agent inside the intended scope:
 
+- Codex current harness only: [prompts/setup-codex-current-harness.md](prompts/setup-codex-current-harness.md)
+- Claude Code current harness only: [prompts/setup-claude-current-harness.md](prompts/setup-claude-current-harness.md)
+- OpenCode current harness only: [prompts/setup-opencode-current-harness.md](prompts/setup-opencode-current-harness.md)
 - Generic shared core setup: [prompts/setup-shared-core.md](prompts/setup-shared-core.md)
 - OpenClaw shared core only: [prompts/setup-openclaw-shared-core.md](prompts/setup-openclaw-shared-core.md)
 - OpenClaw ACP integration: [prompts/setup-openclaw-acp.md](prompts/setup-openclaw-acp.md)

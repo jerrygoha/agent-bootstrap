@@ -44,10 +44,22 @@
 
 尤其对 OpenClaw 场景，默认行为不应该是 `Codex-first`，而应该先只处理 shared prompt 和 skills 层。
 
+## 默认范围矩阵
+
+- Codex: `current-harness-only`
+- Claude Code: `current-harness-only`
+- OpenCode: `current-harness-only`
+- OpenClaw: `shared-core-only`
+
+`current-harness-only` 的意思是：如果你已经处在 Codex、Claude Code 或 OpenCode 里，那么默认只配置当前这个 harness，除非用户明确要求，否则不要去配置别的 harness。
+
 ## 设置提示词
 
 下面这些提示词适合直接贴给其他代理：
 
+- Codex 当前 harness 专用: [prompts/setup-codex-current-harness.md](prompts/setup-codex-current-harness.md)
+- Claude Code 当前 harness 专用: [prompts/setup-claude-current-harness.md](prompts/setup-claude-current-harness.md)
+- OpenCode 当前 harness 专用: [prompts/setup-opencode-current-harness.md](prompts/setup-opencode-current-harness.md)
 - 通用 shared core 设置: [prompts/setup-shared-core.md](prompts/setup-shared-core.md)
 - OpenClaw shared core 专用: [prompts/setup-openclaw-shared-core.md](prompts/setup-openclaw-shared-core.md)
 - OpenClaw ACP 集成: [prompts/setup-openclaw-acp.md](prompts/setup-openclaw-acp.md)

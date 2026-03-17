@@ -44,10 +44,22 @@ OpenClaw への統合方法も文書化しますが、OpenClaw は first-class b
 
 特に OpenClaw の依頼では、`Codex-first` をデフォルトにせず、shared prompt と skills の層だけを先に揃えるのが正しい初期動作です。
 
+## デフォルト範囲マトリクス
+
+- Codex: `current-harness-only`
+- Claude Code: `current-harness-only`
+- OpenCode: `current-harness-only`
+- OpenClaw: `shared-core-only`
+
+`current-harness-only` とは、すでに Codex、Claude Code、OpenCode の中にいる場合、デフォルトではその現在のハーネスだけを設定し、他のハーネスはユーザーが明示的に要求したときだけ触るという意味です。
+
 ## セットアップ用プロンプト
 
 別のエージェントにそのまま貼り付けやすいプロンプト:
 
+- Codex 現在ハーネス専用: [prompts/setup-codex-current-harness.md](prompts/setup-codex-current-harness.md)
+- Claude Code 現在ハーネス専用: [prompts/setup-claude-current-harness.md](prompts/setup-claude-current-harness.md)
+- OpenCode 現在ハーネス専用: [prompts/setup-opencode-current-harness.md](prompts/setup-opencode-current-harness.md)
 - 共通 shared core セットアップ: [prompts/setup-shared-core.md](prompts/setup-shared-core.md)
 - OpenClaw shared core 専用: [prompts/setup-openclaw-shared-core.md](prompts/setup-openclaw-shared-core.md)
 - OpenClaw ACP 統合: [prompts/setup-openclaw-acp.md](prompts/setup-openclaw-acp.md)

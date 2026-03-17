@@ -44,10 +44,22 @@ OpenClaw 연동 방법도 문서화하지만, OpenClaw는 first-class bootstrap 
 
 특히 OpenClaw 요청에서는 `Codex-first`가 기본값이 아니고, shared prompt와 skills 레이어만 먼저 맞추는 것이 기본값입니다.
 
+## 기본 범위 매트릭스
+
+- Codex: `current-harness-only`
+- Claude Code: `current-harness-only`
+- OpenCode: `current-harness-only`
+- OpenClaw: `shared-core-only`
+
+`current-harness-only`의 의미는, 이미 Codex나 Claude Code나 OpenCode 안에 있다면 기본적으로 그 현재 하네스만 세팅하고 다른 하네스는 사용자가 명시적으로 요구할 때만 건드린다는 뜻입니다.
+
 ## 세팅 프롬프트
 
 다른 에이전트에 바로 붙여넣기 좋은 프롬프트:
 
+- Codex 현재 하네스 전용: [prompts/setup-codex-current-harness.md](prompts/setup-codex-current-harness.md)
+- Claude Code 현재 하네스 전용: [prompts/setup-claude-current-harness.md](prompts/setup-claude-current-harness.md)
+- OpenCode 현재 하네스 전용: [prompts/setup-opencode-current-harness.md](prompts/setup-opencode-current-harness.md)
 - 공통 shared core 세팅: [prompts/setup-shared-core.md](prompts/setup-shared-core.md)
 - OpenClaw shared core 전용: [prompts/setup-openclaw-shared-core.md](prompts/setup-openclaw-shared-core.md)
 - OpenClaw ACP 연동: [prompts/setup-openclaw-acp.md](prompts/setup-openclaw-acp.md)

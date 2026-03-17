@@ -10,6 +10,14 @@ If a user says "set this up from the repo" and does not explicitly ask for ACP o
 
 Do not default to Codex-first.
 
+## Native Vs ACP
+
+OpenClaw should stay `native-first` for default delegation.
+
+ACP is optional.
+
+Use OpenClaw-native delegation for routine internal orchestration. Use ACP only when the user explicitly wants an external harness runtime such as Codex, Claude Code, or OpenCode.
+
 ## Path A: shared-core-only
 
 This is the default path for OpenClaw users who want the repository's workflow layer without replacing the rest of their OpenClaw environment.
@@ -42,6 +50,7 @@ Use it only if the user explicitly asks for ACP integration or explicitly names 
 
 What to do:
 
+- ask the user which harness to connect if that is not already explicit
 - identify the requested harness explicitly
 - bootstrap that harness only if the user asked for it
 - configure OpenClaw ACP settings only within that requested integration scope

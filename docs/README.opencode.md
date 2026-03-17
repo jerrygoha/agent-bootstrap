@@ -2,6 +2,14 @@
 
 OpenCode uses a local installer because the baseline needs user-specific prompt rendering while still relying on upstream `obra/superpowers` through OpenCode's native plugin support.
 
+## Default Scope
+
+Inside OpenCode, the default setup scope is `current-harness-only`.
+
+If the user says "set this up from the repo" and does not explicitly ask for Codex, Claude Code, OpenClaw ACP, or cross-harness setup, configure OpenCode only.
+
+Do not configure another harness unless the user explicitly asks.
+
 ## Install
 
 ```bash

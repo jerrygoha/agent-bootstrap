@@ -5,6 +5,14 @@ This repository supports Claude Code in two layers:
 - install Anthropic's official `superpowers` plugin for the skills library
 - install this repository's `process-first-agents` plugin for the shared agent prompts
 
+## Default Scope
+
+Inside Claude Code, the default setup scope is `current-harness-only`.
+
+If the user says "set this up from the repo" and does not explicitly ask for Codex, OpenCode, OpenClaw ACP, or cross-harness setup, configure Claude Code only.
+
+Do not configure another harness unless the user explicitly asks.
+
 ## Recommended Setup
 
 1. Install upstream `superpowers` from the official Claude marketplace.
