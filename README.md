@@ -128,10 +128,10 @@ bash scripts/install.sh --partner-name "Hun"
 Because the installer only manages a known subset of files and creates backups first, this is safe to repeat.
 Re-running the installer also refreshes `~/.codex/superpowers` to the latest upstream commit.
 
-## Public Baseline and Private Overlay
+## Public Baseline Scope
 
 This repository is meant to stay public and portable.
-That means it should only contain the baseline setup that is safe to share.
+That means it should contain only the baseline setup that is safe to share.
 
 Good public content:
 
@@ -149,15 +149,6 @@ Keep these out of the public repo:
 - organization-specific secrets
 - machine-specific trust configuration
 - anything that would be awkward or unsafe to publish
-
-If you need those, use a second private overlay repository on top of this one.
-
-A practical pattern is:
-
-1. Install this public baseline first.
-2. Apply a private overlay repo second.
-3. Keep the public repo focused on reproducible defaults.
-4. Keep sensitive or organization-specific additions in the private repo.
 
 The public baseline should remain useful on a brand new machine with no prior context.
 
