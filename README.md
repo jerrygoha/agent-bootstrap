@@ -79,6 +79,12 @@ If the user does not care, the default is `Hun`.
 3. Paste the contents of `prompts/fresh-install.md`.
 4. Let Codex ask for the partner name and run the installer.
 
+Example instruction to paste into a fresh Codex session:
+
+```text
+Read README.md and prompts/fresh-install.md in this repository, ask me what name Codex should call me, then install the managed Codex files exactly as documented.
+```
+
 ### Method 2: Run the installer directly
 
 ```bash
