@@ -13,7 +13,7 @@ Follow these rules exactly:
    - the managed subagent configuration under `~/.codex`
    - the latest `~/.codex/superpowers` checkout
 6. Do not modify or delete unrelated `~/.codex` state such as credentials, history, logs, or automations.
-7. If the installer fails, inspect `scripts/install.py`, diagnose the actual cause, and fix the smallest reasonable issue before retrying.
+7. If the installer fails, inspect `.codex/install.py`, diagnose the actual cause, and fix the smallest reasonable issue before retrying.
 8. Summarize:
    - chosen partner name
    - backup location reported by the installer
