@@ -114,6 +114,38 @@ bash scripts/install.sh --partner-name "Hun"
 
 Because the installer only manages a known subset of files and creates backups first, this is safe to repeat.
 
+## Public Baseline and Private Overlay
+
+This repository is meant to stay public and portable.
+That means it should only contain the baseline setup that is safe to share.
+
+Good public content:
+
+- general workflow rules
+- agent prompts
+- portable Codex configuration
+- installer logic
+- documentation
+
+Keep these out of the public repo:
+
+- private MCP server endpoints
+- personal project paths
+- organization-specific secrets
+- machine-specific trust configuration
+- anything that would be awkward or unsafe to publish
+
+If you need those, use a second private overlay repository on top of this one.
+
+A practical pattern is:
+
+1. Install this public baseline first.
+2. Apply a private overlay repo second.
+3. Keep the public repo focused on reproducible defaults.
+4. Keep sensitive or organization-specific additions in the private repo.
+
+The public baseline should remain useful on a brand new machine with no prior context.
+
 ## Operating Model
 
 This setup is intentionally process-first.
@@ -139,3 +171,13 @@ If you add new managed files:
 - update the installer verification logic if needed
 - update this README
 - update `prompts/fresh-install.md` if the installation flow changes
+
+## Testing the Installer
+
+Run the installer tests with:
+
+```bash
+python3 -m unittest discover -s tests -p 'test_*.py'
+```
+
+If you change installer behavior, add or update tests first.

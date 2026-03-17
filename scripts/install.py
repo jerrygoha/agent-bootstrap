@@ -32,6 +32,11 @@ def parse_args() -> argparse.Namespace:
         default=None,
         help="Repository root. Defaults to the parent of this script directory.",
     )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Print the install plan without writing or backing up files.",
+    )
     return parser.parse_args()
 
 
@@ -92,6 +97,14 @@ def verify_install(target_root: Path, codex_home_abs: str, expected_agent_paths:
             raise RuntimeError(f"config.toml is missing expected agent path: {expected}")
 
 
+def print_install_plan(target_root: Path, relative_paths: list[Path], partner_name: str) -> None:
+    print(f"Dry run: would install managed Codex files into {target_root}")
+    print(f"Partner name: {partner_name}")
+    print("Managed files:")
+    for relative in relative_paths:
+        print(f"- {target_root / relative}")
+
+
 def main() -> int:
     args = parse_args()
 
@@ -108,6 +121,10 @@ def main() -> int:
 
     files = managed_files(template_root)
     relative_paths = [path.relative_to(template_root) for path in files]
+
+    if args.dry_run:
+        print_install_plan(target_root, relative_paths, args.partner_name)
+        return 0
 
     backup_root = backup_existing_files(target_root, relative_paths)
 
