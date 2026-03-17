@@ -1,0 +1,12 @@
+{
+  "name": "agent-bootstrap",
+  "description": "Marketplace for process-first Claude Code agents",
+  "plugins": [
+    {
+      "name": "process-first-agents",
+      "description": "Process-first shared agents for Claude Code",
+      "version": "1.0.0",
+      "source": "./plugins/process-first-agents"
+    }
+  ]
+}

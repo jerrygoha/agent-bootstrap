@@ -31,6 +31,7 @@ The repository is split into two layers:
 - shared core
   - `AGENTS.md`
   - `agents/*.md`
+  - `shared/agent-metadata.json`
   - common process-first constitution and role prompt bodies
 - harness adapters
   - `.codex/`
@@ -45,32 +46,42 @@ Each adapter translates that core into the native format expected by the target 
 This bootstrap is built around `obra/superpowers`.
 
 - Codex uses the native `~/.agents/skills/superpowers` symlink pattern
-- OpenCode uses the native plugin line: `superpowers@git+https://github.com/obra/superpowers.git`
-- Claude Code uses native plugin packaging and marketplaces
+- OpenCode uses the native plugin line `superpowers@git+https://github.com/obra/superpowers.git`
+- Claude Code is split into:
+  - upstream official `superpowers` for the skill library
+  - this repository's Claude plugin package for the shared agent prompts
 
 The intent is to reuse upstream superpowers instead of copying their skill library into this repository.
 
-## Planned Layout
+## Install Paths
+
+- Codex: [docs/README.codex.md](docs/README.codex.md)
+- Claude Code: [docs/README.claude.md](docs/README.claude.md)
+- OpenCode: [docs/README.opencode.md](docs/README.opencode.md)
+- OpenClaw integration: [docs/README.openclaw.md](docs/README.openclaw.md)
+
+## Repository Layout
 
 - `AGENTS.md`
   - shared constitution template
 - `agents/`
   - shared role prompt bodies
+- `shared/agent-metadata.json`
+  - shared descriptions and OpenCode capability metadata
 - `.codex/`
-  - Codex install docs, templates, and installer
-- `.claude-plugin/`
-  - Claude Code plugin metadata and marketplace packaging
+  - Codex installer, templates, and install guide
 - `.opencode/`
-  - OpenCode install docs, templates, and installer
+  - OpenCode installer, templates, and install guide
+- `.claude-plugin/marketplace.json`
+  - repository-level Claude marketplace entry
+- `plugins/process-first-agents/`
+  - generated Claude plugin package
+- `scripts/render_claude_plugin.py`
+  - rebuilds the Claude plugin package from the shared prompt corpus
 - `docs/`
-  - harness-specific usage and OpenClaw integration notes
+  - harness-specific guides and OpenClaw notes
 - `tests/`
-  - installer and metadata verification
-
-## Current Status
-
-The repository is being refactored from a Codex-only bootstrap into the multi-harness structure above.
-Until that refactor is complete, some files still live in the old Codex-centric layout.
+  - Python verification for installers and plugin metadata
 
 ## Constraints
 
@@ -83,6 +94,22 @@ Keep these out:
 - organization-specific secrets
 - machine-specific trust configuration
 - credentials, tokens, or auth state
+
+## Updating
+
+- Codex and OpenCode: re-run the harness installer after pulling
+- Claude Code: re-run `python3 scripts/render_claude_plugin.py --partner-name "<Name>"` after pulling, then update the local plugin installation
+
+## Legacy Files
+
+Some files from the earlier Codex-only bootstrap still exist during the transition:
+
+- `codex-home/`
+- `scripts/install.py`
+- `scripts/install.sh`
+- `prompts/fresh-install.md`
+
+They are not the long-term multi-harness entrypoints.
 
 ## Testing
 
