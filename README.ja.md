@@ -32,6 +32,26 @@ Codex、Claude Code、OpenCode向けのプロセス重視AIコーディング環
 
 OpenClaw への統合方法も文書化しますが、OpenClaw は first-class bootstrap target ではなく integration layer として扱います。
 
+## デフォルトのセットアップ範囲
+
+ユーザーが「このレポを見てセットアップして」とだけ言い、特定のハーネスを指定しない場合、デフォルトは `shared-core-only` です。
+
+`shared-core-only` の意味:
+
+- 現在のツールが対応していれば `superpowers` をインストールまたは更新する
+- shared constitution と agent/subagent prompts だけを現在のツールのネイティブ形式で適用する
+- ユーザーが明示しない限り、新しいハーネス、ACP backend、gateway、provider stack を選ばない
+
+特に OpenClaw の依頼では、`Codex-first` をデフォルトにせず、shared prompt と skills の層だけを先に揃えるのが正しい初期動作です。
+
+## セットアップ用プロンプト
+
+別のエージェントにそのまま貼り付けやすいプロンプト:
+
+- 共通 shared core セットアップ: [prompts/setup-shared-core.md](prompts/setup-shared-core.md)
+- OpenClaw shared core 専用: [prompts/setup-openclaw-shared-core.md](prompts/setup-openclaw-shared-core.md)
+- OpenClaw ACP 統合: [prompts/setup-openclaw-acp.md](prompts/setup-openclaw-acp.md)
+
 ## インストールガイド
 
 - Codex: [docs/README.codex.md](docs/README.codex.md)

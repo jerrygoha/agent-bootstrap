@@ -1,30 +1,78 @@
 # OpenClaw
 
-OpenClaw is treated as an integration layer, not a first-class bootstrap target.
+OpenClaw is still treated as an integration layer rather than a first-class bootstrap target.
 
-That is intentional.
+That part has not changed.
 
-This repository manages the baseline prompt corpus and harness adapters for:
+What has changed is the default setup scope.
 
-- Codex
-- Claude Code
-- OpenCode
+If a user says "set this up from the repo" and does not explicitly ask for ACP or name a harness, the correct default is `shared-core-only`.
 
-OpenClaw should sit on top of those tools after they are installed and verified individually.
+Do not default to Codex-first.
+
+## Path A: shared-core-only
+
+This is the default path for OpenClaw users who want the repository's workflow layer without replacing the rest of their OpenClaw environment.
+
+Use this path when the user wants:
+
+- `superpowers`
+- shared prompt corpus
+- agent and subagent prompts
+- minimal disruption to their existing OpenClaw setup
+
+What to do:
+
+- install or update `superpowers` if the current environment supports it
+- apply `AGENTS.md` and `agents/*.md` in whatever native format the current OpenClaw setup can consume
+- back up any prompt or skill files you replace
+
+What not to do:
+
+- do not choose Codex-first, Claude-first, or OpenCode-first by default
+- do not change ACP settings
+- do not touch unrelated OpenClaw identity, gateway, transport, auth, or provider settings
+- do not reset the entire OpenClaw environment
+
+## Path B: ACP integration
+
+This is the optional path.
+
+Use it only if the user explicitly asks for ACP integration or explicitly names a harness such as Codex, Claude Code, or OpenCode.
+
+What to do:
+
+- identify the requested harness explicitly
+- bootstrap that harness only if the user asked for it
+- configure OpenClaw ACP settings only within that requested integration scope
+- back up ACP-related config before editing it
+
+What not to do:
+
+- do not infer ACP from a generic setup request
+- do not change unrelated OpenClaw identity, gateway, transport, auth, or provider settings
+- do not treat a repo URL alone as permission to redesign the user's runtime stack
 
 ## Recommended Order
 
-1. Install and verify one or more first-class harnesses from this repository.
-2. Configure OpenClaw ACP agents to launch those installed harnesses.
-3. Keep provider-specific OpenClaw settings in your own environment, not in this public repository.
+For generic setup requests:
 
-## Why This Repo Does Not Ship OpenClaw Config
+1. Start with Path A: `shared-core-only`
+2. Stop there unless the user asks for ACP or names a harness
 
-OpenClaw provider configuration is environment-specific:
+For explicit ACP requests:
+
+1. Confirm the harness
+2. Bootstrap that harness if needed
+3. Apply only the ACP integration changes required for that harness
+
+## Scope Boundary
+
+This repository does not ship a universal OpenClaw config because those settings are environment-specific:
 
 - model/provider selection
 - transport and gateway details
 - auth and token handling
 - local path assumptions
 
-Those do not belong in a public, portable baseline.
+Those should remain in the user's own environment unless they explicitly request changes inside that scope.

@@ -32,6 +32,26 @@
 
 它也会说明如何接入 OpenClaw，但 OpenClaw 被刻意视为 integration layer，而不是 first-class bootstrap target。
 
+## 默认设置范围
+
+如果用户只是说“看这个仓库帮我设一下”，但没有指定具体 harness，那么默认范围应当是 `shared-core-only`。
+
+`shared-core-only` 的含义：
+
+- 如果当前工具支持，就安装或更新 `superpowers`
+- 只把 shared constitution 和 agent/subagent prompts 以当前工具的原生格式落地
+- 除非用户明确要求，否则不要擅自选择新的 harness、ACP backend、gateway 或 provider stack
+
+尤其对 OpenClaw 场景，默认行为不应该是 `Codex-first`，而应该先只处理 shared prompt 和 skills 层。
+
+## 设置提示词
+
+下面这些提示词适合直接贴给其他代理：
+
+- 通用 shared core 设置: [prompts/setup-shared-core.md](prompts/setup-shared-core.md)
+- OpenClaw shared core 专用: [prompts/setup-openclaw-shared-core.md](prompts/setup-openclaw-shared-core.md)
+- OpenClaw ACP 集成: [prompts/setup-openclaw-acp.md](prompts/setup-openclaw-acp.md)
+
 ## 安装指南
 
 - Codex: [docs/README.codex.md](docs/README.codex.md)

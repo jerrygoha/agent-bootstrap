@@ -30,6 +30,26 @@ It is aimed at teams and individual developers who want one reusable bootstrap f
 
 It also documents how to integrate those tools into OpenClaw, but OpenClaw is intentionally treated as an integration layer rather than a first-class bootstrap target.
 
+## Default Setup Scope
+
+If the user says "set this up from the repo" and does not specify a harness, default to `shared-core-only`.
+
+`shared-core-only` means:
+
+- install or update `superpowers` if the current tool supports it
+- install the shared constitution and agent/subagent prompts in the current tool's native format
+- avoid picking a new harness, ACP backend, gateway, or provider stack unless the user explicitly asks for it
+
+This matters most for OpenClaw-style setup requests. The correct default is not `Codex-first`, `Claude-first`, or `OpenCode-first`. The correct default is the shared prompt and skills layer only.
+
+## Setup Prompts
+
+These copy-paste prompts are the fastest way to keep another agent inside the intended scope:
+
+- Generic shared core setup: [prompts/setup-shared-core.md](prompts/setup-shared-core.md)
+- OpenClaw shared core only: [prompts/setup-openclaw-shared-core.md](prompts/setup-openclaw-shared-core.md)
+- OpenClaw ACP integration: [prompts/setup-openclaw-acp.md](prompts/setup-openclaw-acp.md)
+
 ## Install Guides
 
 - Codex: [docs/README.codex.md](docs/README.codex.md)
