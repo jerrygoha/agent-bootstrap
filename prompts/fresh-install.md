@@ -9,12 +9,16 @@ Follow these rules exactly:
 3. Use the repository installer instead of manually editing files unless the installer is broken.
 4. Run:
    - `bash scripts/install.sh --partner-name "<chosen-name>"`
-5. Do not modify or delete unrelated `~/.codex` state such as credentials, history, logs, or automations.
-6. If the installer fails, inspect `scripts/install.py`, diagnose the actual cause, and fix the smallest reasonable issue before retrying.
-7. Summarize:
+5. This install must set up both:
+   - the managed subagent configuration under `~/.codex`
+   - the latest `~/.codex/superpowers` checkout
+6. Do not modify or delete unrelated `~/.codex` state such as credentials, history, logs, or automations.
+7. If the installer fails, inspect `scripts/install.py`, diagnose the actual cause, and fix the smallest reasonable issue before retrying.
+8. Summarize:
    - chosen partner name
    - backup location reported by the installer
    - installed files
+   - superpowers remote, path, and synced commit
    - anything skipped or requiring manual follow-up
 
 If any required repo file is missing or malformed, stop and report the issue instead of guessing.

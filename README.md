@@ -21,12 +21,14 @@ The installer manages only these paths under `~/.codex`:
 - `local.md`
 - `config.toml`
 - `agents/*.md`
+- `superpowers/` synced from `https://github.com/obra/superpowers.git`
 
 These files define:
 
 - the global working rules
 - the multi-agent role prompts
 - the process-first Codex configuration
+- the superpowers skills used by that workflow
 
 ## What It Intentionally Does Not Manage
 
@@ -40,6 +42,7 @@ The installer does not modify:
 - per-user MCP credentials or private project trust lists
 
 This repository is a portable baseline, not a full machine image.
+It does install and refresh `~/.codex/superpowers`, because the baseline workflow depends on those skills being present.
 
 ## Repository Layout
 
@@ -78,6 +81,7 @@ If the user does not care, the default is `Hun`.
 2. Open Codex App or Codex CLI in this repository.
 3. Paste the contents of `prompts/fresh-install.md`.
 4. Let Codex ask for the partner name and run the installer.
+5. The installer will set up both the managed subagent prompts and the latest `superpowers` checkout.
 
 Example instruction to paste into a fresh Codex session:
 
@@ -105,9 +109,12 @@ The installer will:
 2. Back up any currently managed files into a timestamped backup directory under `~/.codex/backups/codex-dotfiles/`.
 3. Render template placeholders from `codex-home/`.
 4. Install the rendered files into `~/.codex`.
-5. Verify that all managed files exist and that `config.toml` references the installed agent prompt files.
+5. Clone or refresh `~/.codex/superpowers` from `https://github.com/obra/superpowers.git`.
+6. Verify that all managed files exist, that `config.toml` references the installed agent prompt files, and that `superpowers` points at the expected remote.
 
 The installer does not delete unrelated files from `~/.codex`.
+If `~/.codex/superpowers` already exists but is not a git checkout of the expected remote, the installer backs it up and replaces it.
+If it is already the expected checkout, the installer updates it to the latest commit on the remote default branch.
 
 ## Updating an Existing Machine
 
@@ -119,6 +126,7 @@ bash scripts/install.sh --partner-name "Hun"
 ```
 
 Because the installer only manages a known subset of files and creates backups first, this is safe to repeat.
+Re-running the installer also refreshes `~/.codex/superpowers` to the latest upstream commit.
 
 ## Public Baseline and Private Overlay
 
@@ -129,6 +137,7 @@ Good public content:
 
 - general workflow rules
 - agent prompts
+- the superpowers installation/update logic
 - portable Codex configuration
 - installer logic
 - documentation
@@ -161,6 +170,7 @@ The top-level pattern is:
 - `eng-lead` decides whether work stays local or is delegated
 - `planner`, `debugger`, `reviewer`, `verifier`, and `release-manager` enforce process
 - domain agents like `frontend-engineer` and `backend-engineer` implement specialized work
+- `~/.codex/superpowers` is always refreshed so those process skills are available on a fresh machine
 
 The default bias is:
 

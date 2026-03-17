@@ -5,12 +5,14 @@ from __future__ import annotations
 import argparse
 import re
 import shutil
+import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
 MANAGED_ROOT = "codex-home"
 PLACEHOLDER_PATTERN = re.compile(r"\{\{([A-Z0-9_]+)\}\}")
+DEFAULT_SUPERPOWERS_REMOTE = "https://github.com/obra/superpowers.git"
 
 
 def parse_args() -> argparse.Namespace:
@@ -37,6 +39,11 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Print the install plan without writing or backing up files.",
     )
+    parser.add_argument(
+        "--superpowers-remote",
+        default=DEFAULT_SUPERPOWERS_REMOTE,
+        help="Git remote to sync into ~/.codex/superpowers. Defaults to obra/superpowers.",
+    )
     return parser.parse_args()
 
 
@@ -60,8 +67,16 @@ def managed_files(template_root: Path) -> list[Path]:
     return files
 
 
-def backup_existing_files(target_root: Path, managed_relpaths: list[Path]) -> Path | None:
-    existing = [target_root / rel for rel in managed_relpaths if (target_root / rel).exists()]
+def copy_to_backup(source: Path, destination: Path) -> None:
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    if source.is_dir():
+        shutil.copytree(source, destination)
+    else:
+        shutil.copy2(source, destination)
+
+
+def backup_existing_paths(target_root: Path, managed_paths: list[Path]) -> Path | None:
+    existing = [path for path in managed_paths if path.exists()]
     if not existing:
         return None
 
@@ -73,8 +88,7 @@ def backup_existing_files(target_root: Path, managed_relpaths: list[Path]) -> Pa
     )
     for source in existing:
         destination = backup_root / source.relative_to(target_root)
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(source, destination)
+        copy_to_backup(source, destination)
     return backup_root
 
 
@@ -97,12 +111,118 @@ def verify_install(target_root: Path, codex_home_abs: str, expected_agent_paths:
             raise RuntimeError(f"config.toml is missing expected agent path: {expected}")
 
 
-def print_install_plan(target_root: Path, relative_paths: list[Path], partner_name: str) -> None:
+def verify_superpowers_install(target_root: Path, expected_remote: str) -> str:
+    superpowers_root = target_root / "superpowers"
+    if not superpowers_root.is_dir():
+        raise RuntimeError(f"missing installed superpowers repo: {superpowers_root}")
+
+    current_remote = git_stdout(
+        "remote",
+        "get-url",
+        "origin",
+        cwd=superpowers_root,
+    ).strip()
+    if current_remote != expected_remote:
+        raise RuntimeError(
+            f"superpowers remote mismatch: expected {expected_remote}, found {current_remote}"
+        )
+
+    return git_stdout("rev-parse", "HEAD", cwd=superpowers_root).strip()
+
+
+def print_install_plan(target_root: Path, relative_paths: list[Path], partner_name: str, superpowers_remote: str) -> None:
     print(f"Dry run: would install managed Codex files into {target_root}")
     print(f"Partner name: {partner_name}")
+    print(f"Superpowers remote: {superpowers_remote}")
     print("Managed files:")
     for relative in relative_paths:
         print(f"- {target_root / relative}")
+    print(f"- {target_root / 'superpowers'}")
+
+
+def git_stdout(*args: str, cwd: Path | None = None) -> str:
+    result = subprocess.run(
+        ["git", *args],
+        cwd=cwd,
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        raise RuntimeError(result.stderr.strip() or "git command failed")
+    return result.stdout
+
+
+def path_is_git_repo(path: Path) -> bool:
+    if not path.is_dir():
+        return False
+    result = subprocess.run(
+        ["git", "rev-parse", "--is-inside-work-tree"],
+        cwd=path,
+        capture_output=True,
+        text=True,
+    )
+    return result.returncode == 0 and result.stdout.strip() == "true"
+
+
+def backup_superpowers_dir(target_root: Path, superpowers_root: Path) -> Path:
+    backup_root = (
+        target_root
+        / "backups"
+        / "codex-dotfiles"
+        / datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    )
+    copy_to_backup(superpowers_root, backup_root / "superpowers")
+    return backup_root
+
+
+def remove_existing_path(path: Path) -> None:
+    if path.is_dir():
+        shutil.rmtree(path)
+    else:
+        path.unlink()
+
+
+def prepare_superpowers_checkout(target_root: Path, remote: str) -> Path | None:
+    superpowers_root = target_root / "superpowers"
+    if not superpowers_root.exists():
+        return None
+
+    if not path_is_git_repo(superpowers_root):
+        backup_root = backup_superpowers_dir(target_root, superpowers_root)
+        remove_existing_path(superpowers_root)
+        return backup_root
+
+    current_remote = git_stdout("remote", "get-url", "origin", cwd=superpowers_root).strip()
+    if current_remote != remote:
+        backup_root = backup_superpowers_dir(target_root, superpowers_root)
+        remove_existing_path(superpowers_root)
+        return backup_root
+
+    return None
+
+
+def sync_superpowers_repo(target_root: Path, remote: str) -> tuple[Path | None, str]:
+    superpowers_root = target_root / "superpowers"
+    backup_root = prepare_superpowers_checkout(target_root, remote)
+
+    if not superpowers_root.exists():
+        target_root.mkdir(parents=True, exist_ok=True)
+        git_stdout("clone", "--depth", "1", remote, str(superpowers_root))
+    else:
+        git_stdout("fetch", "--depth", "1", "origin", cwd=superpowers_root)
+        git_stdout("remote", "set-head", "origin", "-a", cwd=superpowers_root)
+        remote_head = git_stdout(
+            "symbolic-ref",
+            "refs/remotes/origin/HEAD",
+            "--short",
+            cwd=superpowers_root,
+        ).strip()
+        branch_name = remote_head.split("/", maxsplit=1)[1]
+        git_stdout("checkout", branch_name, cwd=superpowers_root)
+        git_stdout("reset", "--hard", f"origin/{branch_name}", cwd=superpowers_root)
+
+    commit = verify_superpowers_install(target_root, remote)
+    return backup_root, commit
 
 
 def main() -> int:
@@ -121,12 +241,13 @@ def main() -> int:
 
     files = managed_files(template_root)
     relative_paths = [path.relative_to(template_root) for path in files]
+    managed_paths = [target_root / relative for relative in relative_paths]
 
     if args.dry_run:
-        print_install_plan(target_root, relative_paths, args.partner_name)
+        print_install_plan(target_root, relative_paths, args.partner_name, args.superpowers_remote)
         return 0
 
-    backup_root = backup_existing_files(target_root, relative_paths)
+    backup_root = backup_existing_paths(target_root, managed_paths)
 
     for source in files:
         relative = source.relative_to(template_root)
@@ -135,18 +256,32 @@ def main() -> int:
         rendered = render_template(source.read_text(encoding="utf-8"), replacements, source)
         destination.write_text(rendered, encoding="utf-8")
 
+    superpowers_backup_root, superpowers_commit = sync_superpowers_repo(
+        target_root,
+        args.superpowers_remote,
+    )
+
     agent_paths = [path for path in relative_paths if path.parts and path.parts[0] == "agents"]
     verify_install(target_root, str(target_root), [target_root / path for path in agent_paths])
 
     print(f"Installed managed Codex files into {target_root}")
     print(f"Partner name: {args.partner_name}")
-    if backup_root is None:
+    if backup_root is None and superpowers_backup_root is None:
         print("Backup: no existing managed files were present")
     else:
-        print(f"Backup: {backup_root}")
+        print("Backup:")
+        if backup_root is not None:
+            print(f"- managed files: {backup_root}")
+        if superpowers_backup_root is not None:
+            print(f"- superpowers replacement: {superpowers_backup_root}")
+    print(f"Superpowers:")
+    print(f"- remote: {args.superpowers_remote}")
+    print(f"- path: {target_root / 'superpowers'}")
+    print(f"- commit: {superpowers_commit}")
     print("Managed files:")
     for relative in relative_paths:
         print(f"- {target_root / relative}")
+    print(f"- {target_root / 'superpowers'}")
     return 0
 
 
