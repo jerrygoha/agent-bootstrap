@@ -1,0 +1,159 @@
+model = "gpt-5.4"
+model_reasoning_effort = "xhigh"
+personality = "pragmatic"
+
+[[custom_agent]]
+agent_type = "eng-lead"
+description = "Primary lead for day-to-day work. Stay local by default and delegate only when it creates clear leverage."
+sandbox_mode = "workspace-write"
+approval_policy = "on-request"
+model = "gpt-5.4"
+model_reasoning_effort = "xhigh"
+base_instructions_file = "{{CODEX_HOME_ABS}}/agents/eng-lead.md"
+
+[[custom_agent]]
+agent_type = "orchestrator"
+description = "Compatibility alias for eng-lead with the same local-first delegation rules."
+sandbox_mode = "workspace-write"
+approval_policy = "on-request"
+model = "gpt-5.4"
+model_reasoning_effort = "xhigh"
+base_instructions_file = "{{CODEX_HOME_ABS}}/agents/eng-lead.md"
+
+[[custom_agent]]
+agent_type = "planner"
+description = "Use for design, decomposition, and implementation planning before code changes."
+sandbox_mode = "read-only"
+approval_policy = "never"
+model = "gpt-5.4"
+model_reasoning_effort = "xhigh"
+base_instructions_file = "{{CODEX_HOME_ABS}}/agents/planner.md"
+
+[[custom_agent]]
+agent_type = "researcher"
+description = "Use for read-only exploration, repository archaeology, and broad context gathering."
+sandbox_mode = "read-only"
+approval_policy = "never"
+model = "gpt-5.4"
+model_reasoning_effort = "high"
+base_instructions_file = "{{CODEX_HOME_ABS}}/agents/researcher.md"
+
+[[custom_agent]]
+agent_type = "debugger"
+description = "Use for bug investigation, reproduction, evidence gathering, and root-cause analysis."
+sandbox_mode = "read-only"
+approval_policy = "never"
+model = "gpt-5.4"
+model_reasoning_effort = "xhigh"
+base_instructions_file = "{{CODEX_HOME_ABS}}/agents/debugger.md"
+
+[[custom_agent]]
+agent_type = "reviewer"
+description = "Use for review-only work focused on bugs, regressions, missing tests, and operational risk."
+sandbox_mode = "read-only"
+approval_policy = "never"
+model = "gpt-5.4"
+model_reasoning_effort = "xhigh"
+base_instructions_file = "{{CODEX_HOME_ABS}}/agents/reviewer.md"
+
+[[custom_agent]]
+agent_type = "verifier"
+description = "Use to gather objective evidence before claiming work is complete."
+sandbox_mode = "read-only"
+approval_policy = "never"
+model = "gpt-5.4"
+model_reasoning_effort = "high"
+base_instructions_file = "{{CODEX_HOME_ABS}}/agents/verifier.md"
+
+[[custom_agent]]
+agent_type = "release-manager"
+description = "Use for branch finishing, release readiness, and CI or merge gate evaluation."
+sandbox_mode = "read-only"
+approval_policy = "never"
+model = "gpt-5.4"
+model_reasoning_effort = "high"
+base_instructions_file = "{{CODEX_HOME_ABS}}/agents/release-manager.md"
+
+[[custom_agent]]
+agent_type = "skill-author"
+description = "Use to create or refine reusable skills and process automation."
+sandbox_mode = "workspace-write"
+approval_policy = "on-request"
+model = "gpt-5.4"
+model_reasoning_effort = "high"
+base_instructions_file = "{{CODEX_HOME_ABS}}/agents/skill-author.md"
+
+[[custom_agent]]
+agent_type = "worker"
+description = "General implementation fallback for routine code changes when no specialist is required."
+sandbox_mode = "workspace-write"
+approval_policy = "on-request"
+model = "gpt-5.4"
+model_reasoning_effort = "high"
+base_instructions_file = "{{CODEX_HOME_ABS}}/agents/worker.md"
+
+[[custom_agent]]
+agent_type = "frontend-engineer"
+description = "Use for UI behavior, state flow, accessibility, and frontend implementation."
+sandbox_mode = "workspace-write"
+approval_policy = "on-request"
+model = "gpt-5.4"
+model_reasoning_effort = "high"
+base_instructions_file = "{{CODEX_HOME_ABS}}/agents/frontend-engineer.md"
+
+[[custom_agent]]
+agent_type = "backend-engineer"
+description = "Use for APIs, domain logic, data integrity, and backend implementation."
+sandbox_mode = "workspace-write"
+approval_policy = "on-request"
+model = "gpt-5.4"
+model_reasoning_effort = "high"
+base_instructions_file = "{{CODEX_HOME_ABS}}/agents/backend-engineer.md"
+
+[[custom_agent]]
+agent_type = "platform-engineer"
+description = "Use for environment, deployment, build, runtime, and platform-level changes."
+sandbox_mode = "workspace-write"
+approval_policy = "on-request"
+model = "gpt-5.4"
+model_reasoning_effort = "high"
+base_instructions_file = "{{CODEX_HOME_ABS}}/agents/platform-engineer.md"
+
+[[custom_agent]]
+agent_type = "data-engineer"
+description = "Use for data pipelines, analytics transformations, migrations, and data quality work."
+sandbox_mode = "workspace-write"
+approval_policy = "on-request"
+model = "gpt-5.4"
+model_reasoning_effort = "high"
+base_instructions_file = "{{CODEX_HOME_ABS}}/agents/data-engineer.md"
+
+[[custom_agent]]
+agent_type = "security-engineer"
+description = "Use for auth, authz, secret handling, trust boundaries, and security-sensitive changes."
+sandbox_mode = "workspace-write"
+approval_policy = "on-request"
+model = "gpt-5.4"
+model_reasoning_effort = "xhigh"
+base_instructions_file = "{{CODEX_HOME_ABS}}/agents/security-engineer.md"
+
+[[custom_agent]]
+agent_type = "integrations-engineer"
+description = "Use for external APIs, SDKs, webhooks, and third-party contract changes."
+sandbox_mode = "workspace-write"
+approval_policy = "on-request"
+model = "gpt-5.4"
+model_reasoning_effort = "high"
+base_instructions_file = "{{CODEX_HOME_ABS}}/agents/integrations-engineer.md"
+
+[[custom_agent]]
+agent_type = "performance-engineer"
+description = "Use for latency, throughput, query cost, memory use, and bottleneck reduction."
+sandbox_mode = "workspace-write"
+approval_policy = "on-request"
+model = "gpt-5.4"
+model_reasoning_effort = "high"
+base_instructions_file = "{{CODEX_HOME_ABS}}/agents/performance-engineer.md"
+
+[features]
+multi_agent = true
