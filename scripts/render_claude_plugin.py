@@ -126,7 +126,7 @@ def render_plugin_bundle(repo_root: Path, plugin_root: Path, partner_name: str) 
         "description": "Process-first shared agents for Claude Code",
         "version": "1.0.0",
         "author": {"name": "Jerry Go", "email": "48903443+jerrygoha@users.noreply.github.com"},
-        "repository": "https://github.com/jerrygoha/codex-dotfiles",
+        "repository": "https://github.com/jerrygoha/agent-bootstrap",
         "license": "MIT",
         "keywords": ["claude-code", "agents", "process-first", "superpowers"],
     }

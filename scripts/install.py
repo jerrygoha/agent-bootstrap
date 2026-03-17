@@ -83,7 +83,7 @@ def backup_existing_paths(target_root: Path, managed_paths: list[Path]) -> Path 
     backup_root = (
         target_root
         / "backups"
-        / "codex-dotfiles"
+        / "agent-bootstrap"
         / datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     )
     for source in existing:
@@ -168,7 +168,7 @@ def backup_superpowers_dir(target_root: Path, superpowers_root: Path) -> Path:
     backup_root = (
         target_root
         / "backups"
-        / "codex-dotfiles"
+        / "agent-bootstrap"
         / datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     )
     copy_to_backup(superpowers_root, backup_root / "superpowers")
