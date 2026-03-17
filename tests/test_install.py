@@ -6,7 +6,7 @@ from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-INSTALLER = REPO_ROOT / "scripts" / "install.py"
+INSTALLER = REPO_ROOT / ".codex" / "install.py"
 
 
 class InstallScriptTests(unittest.TestCase):
@@ -66,12 +66,16 @@ class InstallScriptTests(unittest.TestCase):
     def test_dry_run_reports_managed_files_without_writing(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             codex_home = Path(tmpdir) / ".codex"
+            agents_home = Path(tmpdir) / ".agents"
             resolved_codex_home = codex_home.resolve()
+            resolved_agents_home = agents_home.resolve()
             result = self.run_installer(
                 "--partner-name",
                 "Hun",
                 "--codex-home",
                 str(codex_home),
+                "--agents-home",
+                str(agents_home),
                 "--dry-run",
             )
 
@@ -79,12 +83,15 @@ class InstallScriptTests(unittest.TestCase):
             self.assertIn("Dry run:", result.stdout)
             self.assertIn(str(resolved_codex_home / "config.toml"), result.stdout)
             self.assertIn(str(resolved_codex_home / "superpowers"), result.stdout)
+            self.assertIn(str(resolved_agents_home / "skills" / "superpowers"), result.stdout)
             self.assertFalse(codex_home.exists())
+            self.assertFalse(agents_home.exists())
 
     def test_install_syncs_superpowers_repo_to_latest_remote_commit(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             root = Path(tmpdir)
             codex_home = root / ".codex"
+            agents_home = root / ".agents"
             remote, working = self.create_superpowers_remote(root)
 
             first_commit = self.commit_superpowers_change(
@@ -99,6 +106,8 @@ class InstallScriptTests(unittest.TestCase):
                 "Hun",
                 "--codex-home",
                 str(codex_home),
+                "--agents-home",
+                str(agents_home),
                 "--superpowers-remote",
                 str(remote),
             )
@@ -111,6 +120,9 @@ class InstallScriptTests(unittest.TestCase):
                 self.run_git(codex_home / "superpowers", "rev-parse", "HEAD").stdout.strip(),
                 first_commit,
             )
+            skills_symlink = agents_home / "skills" / "superpowers"
+            self.assertTrue(skills_symlink.is_symlink())
+            self.assertEqual(skills_symlink.resolve(), (codex_home / "superpowers" / "skills").resolve())
 
             second_commit = self.commit_superpowers_change(
                 working,
@@ -124,6 +136,8 @@ class InstallScriptTests(unittest.TestCase):
                 "Hun",
                 "--codex-home",
                 str(codex_home),
+                "--agents-home",
+                str(agents_home),
                 "--superpowers-remote",
                 str(remote),
             )
@@ -136,6 +150,8 @@ class InstallScriptTests(unittest.TestCase):
                 self.run_git(codex_home / "superpowers", "rev-parse", "HEAD").stdout.strip(),
                 second_commit,
             )
+            self.assertTrue(skills_symlink.is_symlink())
+            self.assertEqual(skills_symlink.resolve(), (codex_home / "superpowers" / "skills").resolve())
 
 
 if __name__ == "__main__":
