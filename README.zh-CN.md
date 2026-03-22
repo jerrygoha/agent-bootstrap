@@ -64,6 +64,12 @@
 - OpenClaw shared core 专用: [prompts/setup-openclaw-shared-core.md](prompts/setup-openclaw-shared-core.md)
 - OpenClaw ACP 集成: [prompts/setup-openclaw-acp.md](prompts/setup-openclaw-acp.md)
 
+Codex 会话开场委托许可文案：
+
+```text
+在这个会话里，如果某些工作可以独立拆分，并且你判断使用子代理或并行代理能明显提高效率，就可以使用它们。这是许可，不是强制要求；如果任务很小、耦合很紧、会立刻阻塞当前进度，或者委托开销更大，就留在本地处理。
+```
+
 ## 安装指南
 
 - Codex: [docs/README.codex.md](docs/README.codex.md)

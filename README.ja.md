@@ -64,6 +64,12 @@ OpenClaw への統合方法も文書化しますが、OpenClaw は first-class b
 - OpenClaw shared core 専用: [prompts/setup-openclaw-shared-core.md](prompts/setup-openclaw-shared-core.md)
 - OpenClaw ACP 統合: [prompts/setup-openclaw-acp.md](prompts/setup-openclaw-acp.md)
 
+Codex セッション開始用の委任許可文:
+
+```text
+このセッションでは、独立して切り分けられる作業について、効率が明確に良くなると判断できる場合に限り、サブエージェントや並列エージェントを使ってよい。これは許可であって必須ではないので、作業が小さい、密結合している、直近の進行をすぐに塞ぐ、または委任オーバーヘッドのほうが大きい場合はローカルで進めること。
+```
+
 ## インストールガイド
 
 - Codex: [docs/README.codex.md](docs/README.codex.md)

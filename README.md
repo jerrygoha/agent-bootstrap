@@ -62,6 +62,12 @@ These copy-paste prompts are the fastest way to keep another agent inside the in
 - OpenClaw shared core only: [prompts/setup-openclaw-shared-core.md](prompts/setup-openclaw-shared-core.md)
 - OpenClaw ACP integration: [prompts/setup-openclaw-acp.md](prompts/setup-openclaw-acp.md)
 
+Codex session opener for standing delegation preference:
+
+```text
+In this session, you may use sub-agents or parallel agents for independently separable work when that clearly improves efficiency. This is permission, not a requirement: if the work is small, tightly coupled, immediately blocking, or the delegation overhead is not worth it, stay local instead.
+```
+
 ## Install Guides
 
 - Codex: [docs/README.codex.md](docs/README.codex.md)

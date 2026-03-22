@@ -64,6 +64,12 @@ OpenClaw 연동 방법도 문서화하지만, OpenClaw는 first-class bootstrap 
 - OpenClaw shared core 전용: [prompts/setup-openclaw-shared-core.md](prompts/setup-openclaw-shared-core.md)
 - OpenClaw ACP 연동: [prompts/setup-openclaw-acp.md](prompts/setup-openclaw-acp.md)
 
+Codex 세션 시작용 위임 허용 문구:
+
+```text
+이번 세션에서는 독립적으로 분리 가능한 작업이 있을 때, 효율이 분명히 좋아진다고 판단되면 서브에이전트나 병렬 에이전트를 사용해도 된다. 이건 허용이지 의무가 아니므로, 작업이 작거나 서로 강하게 얽혀 있거나 즉시 막히는 성격이거나 위임 오버헤드가 더 크면 로컬에서 처리해라.
+```
+
 ## 설치 가이드
 
 - Codex: [docs/README.codex.md](docs/README.codex.md)
