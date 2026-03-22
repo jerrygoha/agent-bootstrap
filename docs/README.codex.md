@@ -13,6 +13,12 @@ If the user says "set this up from the repo" and does not explicitly ask for Cla
 
 Do not configure another harness unless the user explicitly asks.
 
+Codex session opener for standing delegation preference:
+
+```text
+In this session, you may use sub-agents or parallel agents for independently separable work when that clearly improves efficiency. This is permission, not a requirement: if the work is small, tightly coupled, immediately blocking, or the delegation overhead is not worth it, stay local instead.
+```
+
 ## Install
 
 ```bash

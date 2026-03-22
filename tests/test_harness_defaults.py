@@ -24,6 +24,7 @@ class HarnessDefaultTests(unittest.TestCase):
         opencode_doc = (REPO_ROOT / "docs" / "README.opencode.md").read_text(encoding="utf-8")
 
         self.assertIn("current-harness-only", codex_doc)
+        self.assertIn("standing delegation preference", codex_doc)
         self.assertIn("current-harness-only", claude_doc)
         self.assertIn("current-harness-only", opencode_doc)
 
