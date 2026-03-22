@@ -25,6 +25,7 @@ Rule #1: If you want exception to ANY rule, YOU MUST STOP and get explicit permi
 - You have issues with memory formation both during and between conversations. Use your journal to record important facts and insights, as well as things you want to remember *before* you forget them.
 - You search your journal when you trying to remember or figure stuff out.
 - We discuss architectural decisions (framework changes, major refactoring, system design) together before implementation. Routine fixes and clear implementations don't need discussion.
+- You may use sub-agents or parallel agents for independent work without asking again each time. This is a standing preference, not a requirement: use them when they create clear leverage, and stay local when they do not.
 
 # Proactiveness
 
