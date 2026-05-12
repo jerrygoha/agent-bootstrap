@@ -93,6 +93,33 @@ class InstallScriptTests(unittest.TestCase):
         (repo_root / "agents" / "eng-lead.md").write_text("Lead {{PARTNER_NAME}}\n", encoding="utf-8")
         return repo_root
 
+    def modify_legacy_codex_template_repo(self, repo_root: Path) -> None:
+        (repo_root / "AGENTS.md").write_text("Changed {{PARTNER_NAME}}\n", encoding="utf-8")
+        (repo_root / ".codex" / "templates" / "local.md").write_text(
+            "Changed local {{PARTNER_NAME}}\n",
+            encoding="utf-8",
+        )
+        (repo_root / ".codex" / "templates" / "config.toml").write_text(
+            'changed_model_instructions_file = "{{CODEX_HOME_ABS}}/agents/eng-lead.md"\n',
+            encoding="utf-8",
+        )
+        (repo_root / "agents" / "eng-lead.md").write_text(
+            "Changed lead {{PARTNER_NAME}}\n",
+            encoding="utf-8",
+        )
+
+    def assert_legacy_codex_install_unchanged(self, codex_home: Path) -> None:
+        self.assertEqual((codex_home / "AGENTS.md").read_text(encoding="utf-8"), "Hello Hun\n")
+        self.assertEqual((codex_home / "local.md").read_text(encoding="utf-8"), "Local Hun\n")
+        self.assertEqual(
+            (codex_home / "config.toml").read_text(encoding="utf-8"),
+            f'model_instructions_file = "{codex_home.resolve()}/agents/eng-lead.md"\n',
+        )
+        self.assertEqual(
+            (codex_home / "agents" / "eng-lead.md").read_text(encoding="utf-8"),
+            "Lead Hun\n",
+        )
+
     def test_dry_run_reports_managed_files_without_writing(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             codex_home = Path(tmpdir) / ".codex"
@@ -197,6 +224,8 @@ class InstallScriptTests(unittest.TestCase):
                 str(repo_root),
             )
             self.assertEqual(first_result.returncode, 0, msg=first_result.stderr)
+            self.assert_legacy_codex_install_unchanged(codex_home)
+            self.modify_legacy_codex_template_repo(repo_root)
             dirty_skill = codex_home / "superpowers" / "skills" / "example" / "SKILL.md"
             dirty_content = "local user edits\n"
             dirty_skill.write_text(dirty_content, encoding="utf-8")
@@ -216,6 +245,7 @@ class InstallScriptTests(unittest.TestCase):
 
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("dirty superpowers checkout", result.stderr)
+            self.assert_legacy_codex_install_unchanged(codex_home)
             self.assertEqual(dirty_skill.read_text(encoding="utf-8"), dirty_content)
 
     def test_install_refuses_to_replace_existing_superpowers_skills_path(self) -> None:
@@ -223,11 +253,6 @@ class InstallScriptTests(unittest.TestCase):
             root = Path(tmpdir)
             codex_home = root / ".codex"
             agents_home = root / ".agents"
-            existing_skills = agents_home / "skills" / "superpowers"
-            existing_skills.mkdir(parents=True)
-            owned_file = existing_skills / "owned.txt"
-            owned_content = "user managed\n"
-            owned_file.write_text(owned_content, encoding="utf-8")
             repo_root = self.create_legacy_codex_template_repo(root)
             remote, working = self.create_superpowers_remote(root)
             self.commit_superpowers_change(
@@ -236,6 +261,27 @@ class InstallScriptTests(unittest.TestCase):
                 "version 1\n",
                 "Add initial skill",
             )
+            first_result = self.run_installer(
+                "--partner-name",
+                "Hun",
+                "--codex-home",
+                str(codex_home),
+                "--agents-home",
+                str(agents_home),
+                "--superpowers-remote",
+                str(remote),
+                "--repo-root",
+                str(repo_root),
+            )
+            self.assertEqual(first_result.returncode, 0, msg=first_result.stderr)
+            self.assert_legacy_codex_install_unchanged(codex_home)
+            self.modify_legacy_codex_template_repo(repo_root)
+            existing_skills = agents_home / "skills" / "superpowers"
+            existing_skills.unlink()
+            existing_skills.mkdir()
+            owned_file = existing_skills / "owned.txt"
+            owned_content = "user managed\n"
+            owned_file.write_text(owned_content, encoding="utf-8")
 
             result = self.run_installer(
                 "--partner-name",
@@ -252,6 +298,7 @@ class InstallScriptTests(unittest.TestCase):
 
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("refusing to replace existing superpowers skills path", result.stderr)
+            self.assert_legacy_codex_install_unchanged(codex_home)
             self.assertEqual(owned_file.read_text(encoding="utf-8"), owned_content)
 
     def test_install_syncs_superpowers_repo_to_latest_remote_commit(self) -> None:

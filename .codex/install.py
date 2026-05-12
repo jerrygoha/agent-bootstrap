@@ -236,6 +236,31 @@ def require_clean_superpowers_checkout(superpowers_root: Path) -> None:
         raise RuntimeError(f"dirty superpowers checkout: {superpowers_root}")
 
 
+def preflight_superpowers_install(
+    target_root: Path,
+    agents_home: Path,
+    remote: str,
+    mode: str,
+) -> None:
+    if mode != "manual":
+        return
+
+    superpowers_root = target_root / "superpowers"
+    if superpowers_root.exists() and path_is_git_repo(superpowers_root):
+        current_remote = git_stdout("remote", "get-url", "origin", cwd=superpowers_root).strip()
+        if current_remote == remote:
+            require_clean_superpowers_checkout(superpowers_root)
+
+    link_path = agents_home / "skills" / "superpowers"
+    target = target_root / "superpowers" / "skills"
+    if link_path.is_symlink() and link_path.resolve() == target.resolve():
+        return
+    if link_path.exists() or link_path.is_symlink():
+        raise RuntimeError(
+            f"refusing to replace existing superpowers skills path: {link_path}"
+        )
+
+
 def prepare_superpowers_checkout(target_root: Path, remote: str) -> Path | None:
     superpowers_root = target_root / "superpowers"
     if not superpowers_root.exists():
@@ -334,6 +359,13 @@ def main() -> int:
             args.superpowers_mode,
         )
         return 0
+
+    preflight_superpowers_install(
+        target_root,
+        agents_home,
+        args.superpowers_remote,
+        args.superpowers_mode,
+    )
 
     backup_root = backup_existing_paths(target_root, managed_paths)
 
