@@ -122,6 +122,24 @@ class ClaudePluginTests(unittest.TestCase):
         self.assertIn("description: Review-only work focused on bugs and regressions", reviewer)
 
     def test_generated_agents_have_claude_frontmatter_policy(self) -> None:
+        expected_agents = {
+            "eng-lead",
+            "worker",
+            "planner",
+            "researcher",
+            "debugger",
+            "frontend-engineer",
+            "backend-engineer",
+            "platform-engineer",
+            "data-engineer",
+            "security-engineer",
+            "integrations-engineer",
+            "performance-engineer",
+            "reviewer",
+            "verifier",
+            "release-manager",
+            "skill-author",
+        }
         read_only_agents = {
             "planner",
             "researcher",
@@ -141,19 +159,33 @@ class ClaudePluginTests(unittest.TestCase):
             "performance-engineer",
             "skill-author",
         }
+        self.assertEqual(read_only_agents & isolated_agents, set())
+        self.assertEqual(
+            read_only_agents | isolated_agents | {"eng-lead"},
+            expected_agents,
+        )
 
-        for agent_path in sorted((PLUGIN_ROOT / "agents").glob("*.md")):
-            with self.subTest(agent=agent_path.stem):
+        agent_paths = {path.stem: path for path in (PLUGIN_ROOT / "agents").glob("*.md")}
+        self.assertEqual(set(agent_paths), expected_agents)
+
+        for agent_name, agent_path in sorted(agent_paths.items()):
+            with self.subTest(agent=agent_name):
                 frontmatter = parse_frontmatter(agent_path.read_text(encoding="utf-8"))
 
                 self.assertEqual(frontmatter.get("model"), "inherit")
                 self.assertNotIn("hooks", frontmatter)
                 self.assertNotIn("mcpServers", frontmatter)
                 self.assertNotIn("permissionMode", frontmatter)
-                if agent_path.stem in read_only_agents:
+                if agent_name in read_only_agents:
                     self.assertEqual(frontmatter["disallowedTools"], ["Write", "Edit"])
-                if agent_path.stem in isolated_agents:
+                    self.assertNotIn("isolation", frontmatter)
+                elif agent_name in isolated_agents:
                     self.assertEqual(frontmatter["isolation"], "worktree")
+                    self.assertNotIn("disallowedTools", frontmatter)
+                else:
+                    self.assertEqual(agent_name, "eng-lead")
+                    self.assertNotIn("disallowedTools", frontmatter)
+                    self.assertNotIn("isolation", frontmatter)
 
 
 if __name__ == "__main__":
