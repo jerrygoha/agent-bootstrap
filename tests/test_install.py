@@ -198,6 +198,40 @@ class InstallScriptTests(unittest.TestCase):
             )
             self.assertNotIn("model =", eng_lead_text)
 
+    def test_install_writes_modern_codex_model_policy(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            codex_home = root / ".codex"
+            agents_home = root / ".agents"
+            remote, working = self.create_superpowers_remote(root)
+            self.commit_superpowers_change(
+                working,
+                "skills/example/SKILL.md",
+                "version 1\n",
+                "Add initial skill",
+            )
+
+            result = self.run_installer(
+                "--partner-name",
+                "Hun",
+                "--codex-home",
+                str(codex_home),
+                "--agents-home",
+                str(agents_home),
+                "--superpowers-remote",
+                str(remote),
+            )
+
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            config_text = (codex_home / "config.toml").read_text(encoding="utf-8")
+            self.assertIn('model = "gpt-5.5"', config_text)
+            self.assertIn('model_reasoning_summary = "detailed"', config_text)
+            self.assertIn('model_verbosity = "high"', config_text)
+            self.assertIn('plan_mode_reasoning_effort = "xhigh"', config_text)
+            self.assertIn("[profiles.previous]", config_text)
+            self.assertIn('model = "gpt-5.4"', config_text.split("[profiles.previous]", 1)[1])
+            self.assertEqual(config_text.count('model = "gpt-5.4"'), 1)
+
     def test_install_refuses_dirty_superpowers_checkout(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             root = Path(tmpdir)
