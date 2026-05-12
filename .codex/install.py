@@ -212,12 +212,14 @@ def path_is_git_repo(path: Path) -> bool:
     if not path.is_dir():
         return False
     result = subprocess.run(
-        ["git", "rev-parse", "--is-inside-work-tree"],
+        ["git", "rev-parse", "--show-toplevel"],
         cwd=path,
         capture_output=True,
         text=True,
     )
-    return result.returncode == 0 and result.stdout.strip() == "true"
+    if result.returncode != 0:
+        return False
+    return Path(result.stdout.strip()).resolve() == path.resolve()
 
 
 def require_clean_superpowers_checkout(superpowers_root: Path) -> None:

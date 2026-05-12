@@ -471,6 +471,45 @@ class InstallScriptTests(unittest.TestCase):
             self.assertEqual(owned_file.read_text(encoding="utf-8"), owned_content)
             self.assertFalse((superpowers_root / ".git").exists())
 
+    def test_install_refuses_nested_non_git_superpowers_path_before_writing_managed_files(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            codex_home = root / ".codex"
+            agents_home = root / ".agents"
+            remote, working = self.create_superpowers_remote(root)
+            self.commit_superpowers_change(
+                working,
+                "skills/example/SKILL.md",
+                "version 1\n",
+                "Add initial skill",
+            )
+            clone_result = subprocess.run(
+                ["git", "clone", str(remote), str(codex_home)],
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(clone_result.returncode, 0, msg=clone_result.stderr)
+            superpowers_root = codex_home / "superpowers"
+            superpowers_root.mkdir()
+
+            result = self.run_installer(
+                "--partner-name",
+                "Hun",
+                "--codex-home",
+                str(codex_home),
+                "--agents-home",
+                str(agents_home),
+                "--superpowers-remote",
+                str(remote),
+            )
+
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("refusing to replace existing superpowers path", result.stderr)
+            self.assertFalse((codex_home / "AGENTS.md").exists())
+            self.assertFalse((codex_home / "config.toml").exists())
+            self.assertTrue(superpowers_root.exists())
+            self.assertFalse((superpowers_root / ".git").exists())
+
     def test_install_refuses_diverged_superpowers_checkout_before_writing_managed_files(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             root = Path(tmpdir)
