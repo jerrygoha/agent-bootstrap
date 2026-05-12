@@ -248,6 +248,54 @@ class InstallScriptTests(unittest.TestCase):
             self.assert_legacy_codex_install_unchanged(codex_home)
             self.assertEqual(dirty_skill.read_text(encoding="utf-8"), dirty_content)
 
+    def test_install_refuses_superpowers_branch_mismatch_before_writing_managed_files(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            codex_home = root / ".codex"
+            agents_home = root / ".agents"
+            repo_root = self.create_legacy_codex_template_repo(root)
+            remote, working = self.create_superpowers_remote(root)
+            self.commit_superpowers_change(
+                working,
+                "skills/example/SKILL.md",
+                "version 1\n",
+                "Add initial skill",
+            )
+            first_result = self.run_installer(
+                "--partner-name",
+                "Hun",
+                "--codex-home",
+                str(codex_home),
+                "--agents-home",
+                str(agents_home),
+                "--superpowers-remote",
+                str(remote),
+                "--repo-root",
+                str(repo_root),
+            )
+            self.assertEqual(first_result.returncode, 0, msg=first_result.stderr)
+            self.assert_legacy_codex_install_unchanged(codex_home)
+            self.run_git(codex_home / "superpowers", "checkout", "-b", "feature")
+            self.modify_legacy_codex_template_repo(repo_root)
+
+            result = self.run_installer(
+                "--partner-name",
+                "Hun",
+                "--codex-home",
+                str(codex_home),
+                "--agents-home",
+                str(agents_home),
+                "--superpowers-remote",
+                str(remote),
+                "--repo-root",
+                str(repo_root),
+            )
+
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("superpowers checkout is on", result.stderr)
+            self.assertIn("expected", result.stderr)
+            self.assert_legacy_codex_install_unchanged(codex_home)
+
     def test_install_refuses_to_replace_existing_superpowers_skills_path(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             root = Path(tmpdir)

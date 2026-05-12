@@ -236,6 +236,28 @@ def require_clean_superpowers_checkout(superpowers_root: Path) -> None:
         raise RuntimeError(f"dirty superpowers checkout: {superpowers_root}")
 
 
+def superpowers_remote_head_branch(superpowers_root: Path) -> str:
+    git_stdout("fetch", "origin", cwd=superpowers_root)
+    git_stdout("remote", "set-head", "origin", "-a", cwd=superpowers_root)
+    remote_head = git_stdout(
+        "symbolic-ref",
+        "refs/remotes/origin/HEAD",
+        "--short",
+        cwd=superpowers_root,
+    ).strip()
+    return remote_head.split("/", maxsplit=1)[1]
+
+
+def require_superpowers_checkout_on_remote_head(superpowers_root: Path) -> str:
+    branch_name = superpowers_remote_head_branch(superpowers_root)
+    current_branch = git_stdout("branch", "--show-current", cwd=superpowers_root).strip()
+    if current_branch != branch_name:
+        raise RuntimeError(
+            f"superpowers checkout is on {current_branch}, expected {branch_name}"
+        )
+    return branch_name
+
+
 def preflight_superpowers_install(
     target_root: Path,
     agents_home: Path,
@@ -250,6 +272,7 @@ def preflight_superpowers_install(
         current_remote = git_stdout("remote", "get-url", "origin", cwd=superpowers_root).strip()
         if current_remote == remote:
             require_clean_superpowers_checkout(superpowers_root)
+            require_superpowers_checkout_on_remote_head(superpowers_root)
 
     link_path = agents_home / "skills" / "superpowers"
     target = target_root / "superpowers" / "skills"
@@ -289,20 +312,7 @@ def sync_superpowers_repo(target_root: Path, remote: str) -> tuple[Path | None, 
         target_root.mkdir(parents=True, exist_ok=True)
         git_stdout("clone", "--depth", "1", remote, str(superpowers_root))
     else:
-        git_stdout("fetch", "origin", cwd=superpowers_root)
-        git_stdout("remote", "set-head", "origin", "-a", cwd=superpowers_root)
-        remote_head = git_stdout(
-            "symbolic-ref",
-            "refs/remotes/origin/HEAD",
-            "--short",
-            cwd=superpowers_root,
-        ).strip()
-        branch_name = remote_head.split("/", maxsplit=1)[1]
-        current_branch = git_stdout("branch", "--show-current", cwd=superpowers_root).strip()
-        if current_branch != branch_name:
-            raise RuntimeError(
-                f"superpowers checkout is on {current_branch}, expected {branch_name}"
-            )
+        branch_name = require_superpowers_checkout_on_remote_head(superpowers_root)
         git_stdout("merge", "--ff-only", f"origin/{branch_name}", cwd=superpowers_root)
 
     commit = verify_superpowers_install(target_root, remote)
